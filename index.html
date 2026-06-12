@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Universally Know</title>
+
+<style>
+body{
+    background:#222;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+}
+
+.card{
+    border:2px solid white;
+    width:150px;
+    padding:10px;
+    margin:10px;
+    display:inline-block;
+    background:#333;
+}
+
+button{
+    padding:10px;
+    margin:5px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Universally Know</h1>
+
+<p>Treasure Cards Left: <span id="treasure">20</span></p>
+
+<h2>Your Main Monster</h2>
+
+<div id="playerCard" class="card"></div>
+
+<h2>Enemy Monster</h2>
+
+<div id="enemyCard" class="card"></div>
+
+<button onclick="attack()">Attack</button>
+<button onclick="heal()">Heal</button>
+
+<h2>Battle Log</h2>
+<div id="log"></div>
+
+<script>
+
+let treasure = 20;
+
+let player = {
+    name:"EA Bull",
+    hp:1200,
+    atk:1000,
+    sh:500
+};
+
+let enemy = {
+    name:"Lava Wolf",
+    hp:1000,
+    atk:900,
+    sh:300
+};
+
+function drawCards(){
+
+document.getElementById("playerCard").innerHTML=
+`
+<b>${player.name}</b><br>
+HP: ${player.hp}<br>
+ATK: ${player.atk}<br>
+SH: ${player.sh}
+`;
+
+document.getElementById("enemyCard").innerHTML=
+`
+<b>${enemy.name}</b><br>
+HP: ${enemy.hp}<br>
+ATK: ${enemy.atk}<br>
+SH: ${enemy.sh}
+`;
+
+document.getElementById("treasure").innerText=treasure;
+
+}
+
+function attack(){
+
+enemy.hp -= player.atk;
+
+log("EA Bull attacks!");
+
+if(enemy.hp <= 0){
+
+log("Enemy defeated!");
+
+treasure--;
+
+enemy.hp = 1000;
+
+}
+
+enemyTurn();
+
+drawCards();
+
+}
+
+function heal(){
+
+player.hp += 200;
+
+if(player.hp > 1200){
+player.hp = 1200;
+}
+
+log("Healed 200 HP");
+
+enemyTurn();
+
+drawCards();
+
+}
+
+function enemyTurn(){
+
+player.hp -= enemy.atk;
+
+log("Enemy attacks!");
+
+if(player.hp <= 0){
+
+alert("You Lost!");
+
+location.reload();
+
+}
+
+}
+
+function log(text){
+
+document.getElementById("log").innerHTML +=
+text + "<br>";
+
+}
+
+drawCards();
+
+</script>
+
+</body>
+</html>
