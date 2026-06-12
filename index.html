@@ -5,7 +5,7 @@
 
 <style>
 body{
-    background:#222;
+    background:#1e1e1e;
     color:white;
     font-family:Arial;
     text-align:center;
@@ -13,18 +13,32 @@ body{
 
 .card{
     border:2px solid white;
-    width:150px;
     padding:10px;
     margin:10px;
     display:inline-block;
+    width:160px;
     background:#333;
 }
 
 button{
     padding:10px;
     margin:5px;
+    cursor:pointer;
+}
+
+#log{
+    margin-top:20px;
+    text-align:left;
+    width:60%;
+    margin-left:auto;
+    margin-right:auto;
+    background:#111;
+    padding:10px;
+    height:200px;
+    overflow:auto;
 }
 </style>
+
 </head>
 
 <body>
@@ -33,12 +47,10 @@ button{
 
 <p>Treasure Cards Left: <span id="treasure">20</span></p>
 
-<h2>Your Main Monster</h2>
-
+<h2>Your Monster</h2>
 <div id="playerCard" class="card"></div>
 
 <h2>Enemy Monster</h2>
-
 <div id="enemyCard" class="card"></div>
 
 <button onclick="attack()">Attack</button>
@@ -49,106 +61,123 @@ button{
 
 <script>
 
+/* --------------------
+   GAME DATA
+-------------------- */
+
 let treasure = 20;
 
 let player = {
     name:"EA Bull",
     hp:1200,
     atk:1000,
-    sh:500
+    sh:500,
+    maxHp:1200
 };
 
 let enemy = {
     name:"Lava Wolf",
     hp:1000,
     atk:900,
-    sh:300
+    sh:300,
+    maxHp:1000
 };
 
-function drawCards(){
+/* --------------------
+   DRAW CARDS
+-------------------- */
 
-document.getElementById("playerCard").innerHTML=
-`
-<b>${player.name}</b><br>
-HP: ${player.hp}<br>
-ATK: ${player.atk}<br>
-SH: ${player.sh}
-`;
+function draw(){
+    document.getElementById("playerCard").innerHTML =
+    `<b>${player.name}</b><br>
+    HP: ${player.hp}/${player.maxHp}<br>
+    ATK: ${player.atk}<br>
+    SH: ${player.sh}`;
 
-document.getElementById("enemyCard").innerHTML=
-`
-<b>${enemy.name}</b><br>
-HP: ${enemy.hp}<br>
-ATK: ${enemy.atk}<br>
-SH: ${enemy.sh}
-`;
+    document.getElementById("enemyCard").innerHTML =
+    `<b>${enemy.name}</b><br>
+    HP: ${enemy.hp}/${enemy.maxHp}<br>
+    ATK: ${enemy.atk}<br>
+    SH: ${enemy.sh}`;
 
-document.getElementById("treasure").innerText=treasure;
-
+    document.getElementById("treasure").innerText = treasure;
 }
+
+/* --------------------
+   ATTACK SYSTEM
+-------------------- */
 
 function attack(){
 
-enemy.hp -= player.atk;
+    let damage = player.atk - enemy.sh;
+    if(damage < 0) damage = 0;
 
-log("EA Bull attacks!");
+    enemy.hp -= damage;
 
-if(enemy.hp <= 0){
+    log("You attacked for " + damage);
 
-log("Enemy defeated!");
+    if(enemy.hp <= 0){
+        treasure--;
+        log("Enemy defeated! Treasure taken.");
+        enemy.hp = enemy.maxHp;
+    }
 
-treasure--;
-
-enemy.hp = 1000;
-
+    enemyTurn();
+    draw();
 }
 
-enemyTurn();
-
-drawCards();
-
-}
+/* --------------------
+   HEAL SYSTEM (H)
+-------------------- */
 
 function heal(){
 
-player.hp += 200;
+    let healAmount = 200;
 
-if(player.hp > 1200){
-player.hp = 1200;
+    player.hp += healAmount;
+
+    if(player.hp > player.maxHp){
+        player.hp = player.maxHp;
+    }
+
+    log("You healed " + healAmount);
+
+    enemyTurn();
+    draw();
 }
 
-log("Healed 200 HP");
-
-enemyTurn();
-
-drawCards();
-
-}
+/* --------------------
+   ENEMY TURN
+-------------------- */
 
 function enemyTurn(){
 
-player.hp -= enemy.atk;
+    let damage = enemy.atk - player.sh;
+    if(damage < 0) damage = 0;
 
-log("Enemy attacks!");
+    player.hp -= damage;
 
-if(player.hp <= 0){
+    log("Enemy attacked for " + damage);
 
-alert("You Lost!");
-
-location.reload();
-
+    if(player.hp <= 0){
+        alert("You Lost!");
+        location.reload();
+    }
 }
 
-}
+/* --------------------
+   LOG SYSTEM
+-------------------- */
 
 function log(text){
-
-document.getElementById("log").innerHTML +=
-text + "<br>";
-
+    document.getElementById("log").innerHTML += text + "<br>";
 }
 
-drawCards();
+/* --------------------
+   START GAME
+-------------------- */
+
+draw();
 
 </script>
 
